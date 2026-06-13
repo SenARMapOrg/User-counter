@@ -36,6 +36,7 @@
 <div class="tabs">
   <button class="tab-btn active" onclick="switchTab('tab-total', this)">合計</button>
   <button class="tab-btn" onclick="switchTab('tab-individual', this)">個別集計</button>
+  <button class="tab-btn" onclick="switchTab('tab-time', this)">時間別集計</button>
 </div>
 
 <div id="tab-total" class="tab-content active">
@@ -107,6 +108,36 @@
           data: { turbo_confirm: "全てのカウントをリセットしますか？" } %>
     <% end %>
   </div>
+</div>
+
+<div id="tab-time" class="tab-content">
+  <h2>時間別集計</h2>
+  <% if @time_slots.empty? %>
+    <p style="color:#888;">まだデータがありません</p>
+  <% else %>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>日時</th>
+            <% @counts.keys.each do |name| %>
+              <th><%= name %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @time_slots.each do |slot| %>
+            <tr>
+              <td style="white-space:nowrap;"><%= "#{slot[0]} #{slot[1].to_s.rjust(2, '0')}:00" %></td>
+              <% @counts.keys.each do |name| %>
+                <td><%= @time_stats[slot][name] || 0 %></td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
 </div>
 
 <script>

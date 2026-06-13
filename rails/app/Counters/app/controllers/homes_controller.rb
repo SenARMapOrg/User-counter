@@ -4,7 +4,11 @@ class HomesController < ApplicationController
 
   def redirect_user
     name = params[:name].presence || Counter::UNNAMED
-    Counter.create!(name: name)
+    cookie_key = "c_#{Digest::SHA256.hexdigest(name)[0, 16]}"
+    unless cookies[cookie_key]
+      Counter.create!(name: name)
+      cookies[cookie_key] = { value: "1", expires: 24.hours.from_now }
+    end
     destination = params[:url].presence || root_url
     redirect_to destination, allow_other_host: true
   end
@@ -22,6 +26,13 @@ class HomesController < ApplicationController
     @unregistered_total = @total - @registered_total
     @tracked_names      = tracked
     @redirect_base      = "#{request.base_url}/redirect"
+
+    raw_time = Counter.group("DATE(created_at)", "HOUR(created_at)", :name).count
+    @time_stats = raw_time.each_with_object({}) do |((date, hour, name), count), h|
+      h[[date, hour]] ||= {}
+      h[[date, hour]][name] = count
+    end
+    @time_slots = @time_stats.keys.sort_by { |date, hour| [-date.to_time.to_i, -hour] }
   end
 
   def create_name
