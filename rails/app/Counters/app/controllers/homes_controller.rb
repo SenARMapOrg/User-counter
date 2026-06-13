@@ -27,7 +27,7 @@ class HomesController < ApplicationController
     @tracked_names      = tracked
     @redirect_base      = "#{request.base_url}/redirect"
 
-    raw_time = Counter.group("DATE(created_at)", "HOUR(created_at)", :name).count
+    raw_time = Counter.group("DATE(CONVERT_TZ(created_at, 'UTC', 'Asia/Tokyo'))", "HOUR(CONVERT_TZ(created_at, 'UTC', 'Asia/Tokyo'))", :name).count
     @time_stats = raw_time.each_with_object({}) do |((date, hour, name), count), h|
       h[[date, hour]] ||= {}
       h[[date, hour]][name] = count
