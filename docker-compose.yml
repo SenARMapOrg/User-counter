@@ -1,0 +1,8 @@
+services:
+  rails:
+    build: 
+      context: ./rails/app/Counters
+    ports:
+      - 3000:3000
+    environment:
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}

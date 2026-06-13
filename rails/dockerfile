@@ -1,0 +1,12 @@
+FROM ruby:4-bookworm
+
+RUN apt-get update && apt-get -y upgrade && apt-get -y install ruby-dev default-libmysqlclient-dev gcc make yarnpkg libxml2 libxml2-dev libxslt-dev libyaml-dev nodejs git vim
+RUN gem install bundler
+RUN gem install nokogiri -- --use-system-libraries
+RUN gem install rails -N --version='~> 8.0, < 9.0'
+
+WORKDIR /app
+
+EXPOSE 3000
+
+CMD ["tail", "-f", "/dev/null"]
